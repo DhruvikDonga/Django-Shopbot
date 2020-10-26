@@ -1,0 +1,27 @@
+categories:
+- grocery
+conversations:
+- - do you have chocolate biscuits.
+  - Yes we have Parle Hide and seek,Parle Bourbon,Britannia,Sunfeast.
+- - order parle hide and seek.
+  - ok sir anything else you wish to order.
+- - order bourbon.
+  - ok sir anything else.
+- - order britannia.
+  - ok sir anything else.
+- - order sunfeast.
+  - ok sir anything else.
+- - Do you have amul milk ?.
+  - Yes for now we have Amul shakti, gold and tazza in our stock.
+- - order tazza
+  - ok sir anything else.
+- - order gold
+  - ok sir anything else.
+- - order shakti
+  - ok sir anything else.
+- - milk products.
+  - Yes for now we have Amul shakti, gold and tazza in our stock.
+- - do you have maggie.
+  - Yes we have 12 ruppess packet and also a big packet for 30 ruppess.
+- - ok order this .
+  - Ok and what else you are intersted in ordering.
