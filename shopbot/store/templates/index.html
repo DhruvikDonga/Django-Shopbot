@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Shopbot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- bootstap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- boostrap css -->
+    
+
+  </head>
+
+  <body>
+     <!-- Add Article Modal -->
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">SHOP WAREHOUSE</h5>
+
+          </div>
+          <div id="starting">
+          <form v-on:submit.prevent="additem()">
+          
+          <div class="modal-body">
+              <div class="form-group">
+                <div class="form-group">
+                  <label for="item_name">Item name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Enter Item name"
+                    v-model="item.item_name"
+                    id="item.item_name"
+                    required="required" >
+                </div>
+                <div class="form-group">
+                  <label for="item_price">Item price</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Enter Item price"
+                    id="item.item_price"
+                    v-model="item.item_price"
+                    required="required" >
+                </div>
+                <div class="form-group">
+                  <label for="item_name">Item qty</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Enter Item qty"
+                    id="item.item_qty"
+                    v-model="item.item_qty"
+                    required="required" >
+                </div>
+          </div>
+        
+          <div class="modal-footer">
+            <button class="btn btn-secondary" v-on:click="clearForm()">Reset</button>
+
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+          
+          </form>
+        
+      <div class="container">
+        <div class="row">
+          <h1>List of Items
+          </h1>
+          &emsp;
+          <div class="form-inline my-2 my-lg-0" style="margin-left: 40%;">
+            <input class="form-control mr-sm-2" type="text" placeholder="Search" v-model="search" aria-label="Search">
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Item name</th>
+                <th scope="col">Item price</th>
+                <th scope="col">Item qty</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in filteredList">
+                <td>${item.item_name}</td>
+                <td>${item.item_price}</td>
+                <td>${item.item_qty}</td>
+                <td>
+                  <button class="btn btn-info" v-on:click="updateitem(item)">Edit</button>
+                  <button class="btn btn-danger" v-on:click="deleteitem(item.item_id)">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+         
+       
+
+        </div>
+      </div>
+
+    </div>
+
+ <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+ <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+ 
+
+ <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.5"></script>
+</body>
+</html>
+
+<script type="text/javascript">
+  Vue.http.headers.common['X-CSRFToken'] = "{{ csrf_token }}";
+
+    new Vue({
+      el: '#starting',
+      delimiters: ['${','}'],
+      data: {
+      items: [],
+      edit: false,
+      currentitem: {},
+      message: null,
+      item: { 'item_id':'','item_name': '', 'item_price': '', 'item_qty': '' },
+      search: '',
+    },
+    mounted: function() {
+      this.getItems();
+   },
+    methods: {
+      getItems: function() {
+        let api_url = '/api/storeitem/';
+          
+         // this.loading = true;
+          this.$http.get(api_url)
+              .then((response) => {
+                this.items = response.data;
+                //this.loading = false;
+              })
+              .catch((err) => {
+               // this.loading = false;
+                console.log(err);
+              })
+       },
+    
+       additem() {
+        //this.loading = true;
+        if(this.edit === false){
+          const itemdata = {
+            item_name:this.item.item_name,
+            item_price:this.item.item_price,
+            item_qty:this.item.item_qty
+          }
+          //console.log(itemdata)
+        this.$http.post('/api/storeitem/',itemdata)
+        .then(res => {
+          console.log(res.body);
+
+          alert('Storeitem Added');
+          this.clearForm();
+
+          this.getItems();
+          })
+        } else {
+          const itemdata = {
+            item_name:this.item.item_name,
+            item_price:this.item.item_price,
+            item_qty:this.item.item_qty
+          }
+          this.$http.put(`/api/storeitem/${this.item.item_id}/`,itemdata)
+          .then(res => {
+            //console.log(res.body);
+            this.clearForm();
+            alert('Storitem Updated');
+            this.getItems();
+            })
+        }
+
+       },
+       updateitem: function(item) {
+        this.edit = true;
+        this.item.item_id = item.item_id
+        this.item.item_qty = item.item_qty;
+        this.item.item_name = item.item_name;
+        this.item.item_price = item.item_price;
+         
+       },
+       deleteitem: function(id) {
+       // this.loading = true;
+        this.$http.delete(`/api/storeitem/${id}/` )
+            .then((response) => {
+              //this.loading = false;
+              this.getItems();
+            })
+            .catch((err) => {
+              //this.loading = false;
+              console.log(err);
+            })
+       },
+       clearForm() {
+         this.edit=false
+        this.item.item_id = '';
+        this.item.item_name = '';
+        this.item.item_price = '';
+        this.item.item_qty = '';
+
+        }
+   },
+     
+computed: {
+  filteredList() {
+  if(this.search){
+      return this.items.filter(item => {
+      return item.item_name.toLowerCase().includes(this.search.toLowerCase())
+      
+  })
+  }
+  else{
+      return this.items
+  }
+  }
+  },
+
+
+  });
+</script>
